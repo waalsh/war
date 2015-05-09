@@ -85,7 +85,7 @@
 				    strength_inherent
 				    intelligence_inherent)
   (make-personality country-character)
-  ;tell statements assign country's character into intervals
+  ;tell statements assign country's character into 
   (tell! (aggression country-character) aggression_inherent)
   (tell! (diplomacy country-character) diplomacy-inherent)
   (tell! (confidence country-character) confidence_inherent)

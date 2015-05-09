@@ -1,3 +1,5 @@
+;This file creates country and resource objects
+
 (define countries-in-play '())
 
 ;;WORLD OBJECTS
