@@ -1,7 +1,6 @@
 ;;; This file describes traits that countries can have in our world
 ;;; It also displays the actions associated with traits
 
-
 (define (add-branch! parent child name)
   (eq-put! parent name child)
   (eq-put! child 'parent parent)
@@ -17,7 +16,7 @@
 	      (list n)))
 	(list (name thing)))))
 
-
+;Create propogator intervals for traits
 (define (make-personality country-character)
 
   (let-cells (aggression diplomacy confidence strength intelligence)
@@ -65,7 +64,7 @@
 (define (get-intelligence country-character)
   (eq-get country-character 'intelligence))
 
-
+;Assigning traits to a country
 (define (declare-national-character! country-character
 				     aggression_inherent 
 				     diplomacy_inherent
@@ -74,6 +73,15 @@
 				     intelligence_inherent)
   (pp 'Declaring)
   (make-personality country-character)
+<<<<<<< HEAD
+=======
+  ;tell statements assign country's character into intervals
+  (tell! (aggression country-character) aggression_inherent)
+  (tell! (diplomacy country-character) diplomacy-inherent)
+  (tell! (confidence country-character) confidence_inherent)
+  (tell! (strength country-character) strength_inherent)
+  (tell! (intelligence country-character) intelligence_inherent))
+>>>>>>> 841e6b5cdec73434fd4dbb5a517fc815c6445660
 
   (tell! (get-aggression country-character) aggression_inherent)
   (tell! (get-diplomacy country-character) diplomacy_inherent)

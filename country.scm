@@ -1,9 +1,12 @@
-;;; This creates a country object
+;This file creates country and resource objects
 
 (define countries-in-play '())
 
-(define-record-type  <country>
-    (%declare-nation  c-name
+;;WORLD OBJECTS
+
+;Country object
+(define-record-type <country>
+    (%declare-nation c-name
 		     c-motto
 		     in-traits    ; list of adjectives
 		     dev-traits   ; strategies and image and our opinion of our intraits
@@ -22,7 +25,7 @@
   (actions-t actions-taken set-actions-taken!)
   (actions-r actions-received set-actions-received!))
 
-
+;Resource object; attached to countries through assign statements
 (define-record-type <resource>
 	(%declare-resource r-name 
 			   r-amount)
@@ -30,8 +33,20 @@
   (r-name resource-name)
   (r-amount resource-amount set-resource-amount!))
 
-(define countries-in-play '())
+;; COUNTRY CREATION METHODS
 
+;Empty country
+(define (create-quick-country name motto)
+  (set! countries-in-play (append countries-in-play name))
+  (let ((in-traits '())
+	(dev-traits '())
+	(res '())
+	(dip-opinions '())
+	(actions-t '())
+	(actions-r '()))
+    (%declare-nation name motto in-traits dev-traits res dip-opinions actions-t actions-r)))
+
+;Full-declared country
 (define (create-country name
 	                motto
 	                aggression
@@ -51,9 +66,7 @@
 	(dip-opinions '())
 	(actions-t '())
 	(actions-r '()))
-
     (declare-national-character! in-traits aggression diplomacy confidence strength intelligence)
-
     (%declare-nation name 
 		     motto 
 		     in-traits 
@@ -82,7 +95,9 @@
 		     actions-r)))
 
 
+;; RESOURCE DECLARATION, GETTING, and SETTING METHODS
 
+;Declaration
 (define (assign-money value)
   (let ((value value)
 	(name 'money))
@@ -101,6 +116,7 @@
     (%declare-resource name
 		       value)))
 
+;Get
 (define (get-money! country)
   (car (resources country)))
 
@@ -110,6 +126,7 @@
 (define (get-population! country)
   (caddr (resources country)))
 
+;Set
 (define (set-money! country value)
   (let ((country-resources (resources country)))
     (define new-resources 
