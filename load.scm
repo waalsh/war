@@ -4,7 +4,6 @@
   '("war/ghelper"
     "war/actions"
     "war/country"
-    "war/family"
     "war/strategy"
     "war/traits"))
 
