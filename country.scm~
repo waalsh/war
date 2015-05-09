@@ -32,11 +32,45 @@
   (amount amount set-amount!)
   (country set-country!))
 
+;people land money
+
+
 
 (define countries-in-play '())
 
+(define (create-country name
+	                motto
+	                aggression
+	                diplomacy
+			confidence
+			strength
+	                intelligence
+			land
+			wealth
+			population
+			)
+  (set! countries-in-play (append countries-in-play name))
+  (let ((in-traits (symbol-append person name '-internal-character))
+	(dev-traits '())
+	(res (list (assign-money wealth) (assign-land land) (assign-population population)))
+	(dip-opinions '())
+	(actions-t '())
+	(actions-r '()))
+
+    (declare-national-character! in-traits aggression diplomacy confidence strength intelligence)
+
+    (%declare-nation name 
+		     motto 
+		     in-traits 
+		     dev-traits
+		     res 
+		     dip-opinions
+		     actions-t
+		     actions-r)))
+
+
 (define (create-quick-country name motto)
-  (append countries-in-play name)
+  (set! countries-in-play (append countries-in-play name))
   (let ((in-traits '())
 	(dev-traits '())
 	(res '())

@@ -61,11 +61,35 @@
                            '(average-joe ,(make-interval 41 80))
                            '(visionary ,(make-interval 81 100))))
      intelligence)
- 
     ))
 
+(define (aggression country-character)
+  (eq-get country-character 'aggression))
+
+(define (diplomacy country-character)
+  (eq-get country-character 'diplomacy))
+
+(define (confidence country-character)
+  (eq-get country-character 'confidence))
+
+(define (strength country-character)
+  (eq-get country-character 'strength))
+
+(define (intelligence country-character)
+  (eq-get country-character 'intelligence))
 
 
-
+(define (declare-national-character! country-character
+				    aggression_inherent 
+				    diplomacy_inherent
+				    confidence_inherent
+				    strength_inherent
+				    intelligence_inherent)
+  (make-personality country-character)
+  (tell! (aggression country-character) aggression_inherent)
+  (tell! (diplomacy country-character) diplomacy-inherent)
+  (tell! (confidence country-character) confidence_inherent)
+  (tell! (strength country-character) strength_inherent)
+  (tell! (intelligence country-character) intelligence_inherent))
 
 
