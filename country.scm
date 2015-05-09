@@ -9,8 +9,8 @@
     (%declare-nation c-name
 		     c-motto
 		     in-traits    ; list of adjectives
-			strategies   ; designations of desired relationship with other countries
-			self-image   ; how the country perceives itself
+		     strategies   ; designations of desired relationship with other countries
+		     self-image   ; how the country perceives itself
 		     res          ; list of resources
 		     dip-opinions ; in-traits of others
 		     meta-model   ; opinions of others about our in-traits country
@@ -20,9 +20,11 @@
   (c-name country-name)
   (c-motto country-motto)
   (in-traits inherent-traits)
-  (dev-traits developed-traits set-developed-traits!)
+  (strategies strategy set-strategy!)
+  (self-image image set-image!)
   (res resources set-resources!)
   (dip-opinions diplomatic-opinions set-diplomatic-opinions!)
+  (meta-model perception set-perception!)
   (actions-t actions-taken set-actions-taken!)
   (actions-r actions-received set-actions-received!))
 
@@ -61,19 +63,22 @@
 			)
   (set! countries-in-play (append countries-in-play (list name)))
   (let ((in-traits (symbol-append name '-internal-character))
-	(dev-traits '())
-	;(res (list (assign-money wealth) (assign-land land) (assign-population population)))
-	(res '())
+	(strategies '())
+        (self-image '())
+	(res (list (assign-money wealth) (assign-land land) (assign-population population)))
 	(dip-opinions '())
+        (meta-model '())
 	(actions-t '())
 	(actions-r '()))
     (declare-national-character! in-traits aggression diplomacy confidence strength intelligence)
     (%declare-nation name 
 		     motto 
 		     in-traits 
-		     dev-traits
+		     strategies
+                     self-image
 		     res 
 		     dip-opinions
+                     meta-model
 		     actions-t
 		     actions-r)))
 
