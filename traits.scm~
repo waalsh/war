@@ -73,15 +73,6 @@
 				     intelligence_inherent)
   (pp 'Declaring)
   (make-personality country-character)
-<<<<<<< HEAD
-=======
-  ;tell statements assign country's character into intervals
-  (tell! (aggression country-character) aggression_inherent)
-  (tell! (diplomacy country-character) diplomacy-inherent)
-  (tell! (confidence country-character) confidence_inherent)
-  (tell! (strength country-character) strength_inherent)
-  (tell! (intelligence country-character) intelligence_inherent))
->>>>>>> 841e6b5cdec73434fd4dbb5a517fc815c6445660
 
   (tell! (get-aggression country-character) aggression_inherent)
   (tell! (get-diplomacy country-character) diplomacy_inherent)

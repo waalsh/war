@@ -9,10 +9,11 @@
     (%declare-nation c-name
 		     c-motto
 		     in-traits    ; list of adjectives
-		     dev-traits   ; strategies and image and our opinion of our intraits
+			strategies   ; designations of desired relationship with other countries
+			self-image   ; how the country perceives itself
 		     res          ; list of resources
 		     dip-opinions ; in-traits of others
-		     ;meta-model      ; opinions of others about our in-traits country
+		     meta-model   ; opinions of others about our in-traits country
 		     actions-t    ; actions taken
 		     actions-r)   ; actions received
    country?
@@ -27,13 +28,8 @@
 
 ;Resource object; attached to countries through assign statements
 (define-record-type <resource>
-<<<<<<< HEAD
 	(%declare-resource r-name 
 			   r-amount)
-=======
-    (%declare-resource name ; 'money, 'land, or 'people
-		       amount)
->>>>>>> 841e6b5cdec73434fd4dbb5a517fc815c6445660
     resource?
   (r-name resource-name)
   (r-amount resource-amount set-resource-amount!))
@@ -82,7 +78,6 @@
 		     actions-r)))
 
 
-<<<<<<< HEAD
 (define (create-quick-country name motto)
   (set! countries-in-play (append countries-in-play (list name)))
   (let ((in-traits '())
@@ -101,12 +96,9 @@
 		     actions-r)))
 
 
-
-=======
 ;; RESOURCE DECLARATION, GETTING, and SETTING METHODS
 
 ;Declaration
->>>>>>> 841e6b5cdec73434fd4dbb5a517fc815c6445660
 (define (assign-money value)
   (let ((value value)
 	(name 'money))

@@ -9,10 +9,11 @@
     (%declare-nation c-name
 		     c-motto
 		     in-traits    ; list of adjectives
-		     dev-traits   ; strategies and image and our opinion of our intraits
+			strategies   ; designations of desired relationship with other countries
+			self-image   ; how the country perceives itself
 		     res          ; list of resources
 		     dip-opinions ; in-traits of others
-		     ;meta-model      ; opinions of others about our in-traits country
+		     meta-model   ; opinions of others about our in-traits country
 		     actions-t    ; actions taken
 		     actions-r)   ; actions received
    country?
