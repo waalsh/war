@@ -1,7 +1,8 @@
-;;; This creates a country object
-
 (define countries-in-play '())
 
+;;WORLD OBJECTS
+
+;Country object
 (define-record-type <country>
     (%declare-nation c-name
 		     c-motto
@@ -22,17 +23,29 @@
   (actions-t actions-taken set-actions-taken!)
   (actions-r actions-received set-actions-received!))
 
-
+;Resource object; attached to countries through assign statements
 (define-record-type <resource>
-	(%declare-resource name 
-			   amount)
+    (%declare-resource name ; 'money, 'land, or 'people
+		       amount)
     resource?
   (name name)
   (amount amount set-amount!)
   (country set-country!))
 
-(define countries-in-play '())
+;; COUNTRY CREATION METHODS
 
+;Empty country
+(define (create-quick-country name motto)
+  (set! countries-in-play (append countries-in-play name))
+  (let ((in-traits '())
+	(dev-traits '())
+	(res '())
+	(dip-opinions '())
+	(actions-t '())
+	(actions-r '()))
+    (%declare-nation name motto in-traits dev-traits res dip-opinions actions-t actions-r)))
+
+;Full-declared country
 (define (create-country name
 	                motto
 	                aggression
@@ -51,9 +64,7 @@
 	(dip-opinions '())
 	(actions-t '())
 	(actions-r '()))
-
     (declare-national-character! in-traits aggression diplomacy confidence strength intelligence)
-
     (%declare-nation name 
 		     motto 
 		     in-traits 
@@ -64,23 +75,9 @@
 		     actions-r)))
 
 
-(define (create-quick-country name motto)
-  (set! countries-in-play (append countries-in-play name))
-  (let ((in-traits '())
-	(dev-traits '())
-	(res '())
-	(dip-opinions '())
-	(actions-t '())
-	(actions-r '()))
-    (%declare-nation name 
-		     motto 
-		     in-traits 
-		     dev-traits
-		     res 
-		     dip-opinions
-		     actions-t
-		     actions-r)))
+;; RESOURCE DECLARATION, GETTING, and SETTING METHODS
 
+;Declaration
 (define (assign-money value)
   (let ((value value)
 	(name 'money))
@@ -99,6 +96,7 @@
     (%declare-resource name
 		       value)))
 
+;Get
 (define (get-money! country)
   (car (resources country)))
 
@@ -108,6 +106,7 @@
 (define (get-population! country)
   (caddr (resources country)))
 
+;Set
 (define (set-money! country value)
   (let ((country-resources (resources country)))
     (define new-resources 
