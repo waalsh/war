@@ -2,8 +2,8 @@
 
 (define countries-in-play '())
 
-(define-record-type <country>
-    (%declare-nation c-name
+(define-record-type  <country>
+    (%declare-nation  c-name
 		     c-motto
 		     in-traits    ; list of adjectives
 		     dev-traits   ; strategies and image and our opinion of our intraits
@@ -12,9 +12,9 @@
 		     ;meta-model      ; opinions of others about our in-traits country
 		     actions-t    ; actions taken
 		     actions-r)   ; actions received
-    country?
-  (c-name name)
-  (c-motto motto)
+   country?
+  (c-name country-name)
+  (c-motto country-motto)
   (in-traits inherent-traits)
   (dev-traits developed-traits set-developed-traits!)
   (res resources set-resources!)
@@ -24,12 +24,11 @@
 
 
 (define-record-type <resource>
-	(%declare-resource name 
-			   amount)
+	(%declare-resource r-name 
+			   r-amount)
     resource?
-  (name name)
-  (amount amount set-amount!)
-  (country set-country!))
+  (r-name resource-name)
+  (r-amount resource-amount set-resource-amount!))
 
 (define countries-in-play '())
 
@@ -44,10 +43,11 @@
 			wealth
 			population
 			)
-  (set! countries-in-play (append countries-in-play name))
-  (let ((in-traits (symbol-append person name '-internal-character))
+  (set! countries-in-play (append countries-in-play (list name)))
+  (let ((in-traits (symbol-append name '-internal-character))
 	(dev-traits '())
-	(res (list (assign-money wealth) (assign-land land) (assign-population population)))
+	;(res (list (assign-money wealth) (assign-land land) (assign-population population)))
+	(res '())
 	(dip-opinions '())
 	(actions-t '())
 	(actions-r '()))
@@ -65,7 +65,7 @@
 
 
 (define (create-quick-country name motto)
-  (set! countries-in-play (append countries-in-play name))
+  (set! countries-in-play (append countries-in-play (list name)))
   (let ((in-traits '())
 	(dev-traits '())
 	(res '())
@@ -80,6 +80,8 @@
 		     dip-opinions
 		     actions-t
 		     actions-r)))
+
+
 
 (define (assign-money value)
   (let ((value value)
@@ -136,27 +138,3 @@
 	(assign-land (random 6600000))
 	(assign-population (random 10000000))))
 
-;Testing
-
-;Create simple country, give it some simple and random resources. Re-set its population.
-
-(define USA (create-quick-country 'USA "We're the best")) ;empty resources
-(value (car (resources USA)))
-;Error, because resources USA returns empty list because its empty
-
-(define some-res (random-resources))
-(set-resources! usa some-res) 
-
-(amount (car (resources USA)))
-;Value: 17330876242
-
-(set-money! usa 0) ;bankruptcy :( Mass panic :( so sad :(
-
-(amount (car (resources USA)))
-;Value: 0
-
-(resources USA)
-
-(+ (car (resources USA)) 3)
-
-countries-in-play

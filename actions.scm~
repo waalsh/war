@@ -19,13 +19,13 @@
 ;; You are dealing with. If you know nothing about a country, you will
 ;; take some default strategy.
  
-(define take-action (make-generic-operator 3 'action 'default-action))
+;(define take-action (make-generic-operator 3 'action 'default-action))
 
-(define (attack actor receiver)
-	#t   
-)
+;(define (attack actor receiver)
+;	#t   
+;)
 
-(defhandler take-action attack attack?)
+;(defhandler take-action attack attack?)
 ;; The last item will be strategy determination
 
 
