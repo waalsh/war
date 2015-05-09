@@ -1,0 +1,17 @@
+;;;; This is the war file load.scm
+
+(define loaded-filenames
+	'("war/compatibility"
+    "war/utils"
+    "war/package"
+    "war/operators"
+    "war/arith"
+    "war/generics"
+	"war/ghelper"
+    "war/actions"
+	"war/country"
+	"war/family"
+	"war/strategy"
+	"war/traits"))
+
+(for-each load loaded-filenames)
