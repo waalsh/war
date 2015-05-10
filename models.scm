@@ -1,38 +1,43 @@
 ;; Models of other nations
 
 (define (estimate-strength country resources) ;;we need to improve this
-	'weak)
+  (list 'weak))
 
 (define (estimate-diplomacy country counter actions-num) ;;we need to improve this
-	'isolationist)
+  (list 'isolationist))
 
 (define (estimate-aggression country action) ;;we need to improve this
-	'meek)
+  (list 'meek))
 
 (define (estimate-confidence country action) ;;we need to improve this
-	'critical)
+  (list 'critical))
 
 (define (estimate-intelligence country action) ;;we need to improve this
-	'follower)
+  (list 'follower))
 
 
 ;find-diplomatic-opinions! decides which traits other countries should have
 ;output: dictionary of a country
 ;        each entry in list: (country . opinions)
+
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
     (let country-loop ((countries all-countries))
       (cond ((pair? countries)
-	    (let action-loop ((actions (actions-taken (car countries)))
-			      (counter 0)
-			      (character '())
-		      (cond ((pair? actions)
-			     ;;deal with the actions
-			     (pp counter)
-			     (action-loop (cdr actions) (+ 1 counter)))
-			    ))
-		;;deal with the country
-	    (pp (country-name (car countries)))
+	     (let action-loop ((actions (actions-taken (car countries)))
+			       (counter 0)
+			       (c-character (list (car countries))))
+	      (cond ((pair? actions) ;more than one action
+		     ;;deal with the actions
+		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
+		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
+		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
+		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
+		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
+		     (set! c-character (append c-character (list 'happy)))
+		     (action-loop (cdr actions) (+ counter 1) c-character))))
+	    ;;deal with the country
+	    (set! opinions (append opinions (list 'b)))
 	    (country-loop (cdr countries)))
 	    (else opinions)))))
 
