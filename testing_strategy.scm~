@@ -1,0 +1,27 @@
+(cd "..")
+(cd "krebecca")
+(load "war/load")
+(define Canada (create-country 'Canada 
+			      "From sea to sea"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      90935100
+			      51958
+			      35))
+
+(set-self-image! Canada '(rational interventionist conceited weak follower))
+(image Canada)
+(set-diplomatic-opinions! Canada '((Russia aggressive 
+					   interventionist 
+					   conceited
+					   super-power
+					   visionary)
+				   (USA    rational
+					   interventionist
+					   realistic
+					   super-power
+					   visionary)))
+(diplomatic-opinions Canada)

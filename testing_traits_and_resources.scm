@@ -27,7 +27,7 @@ countries-in-play
 ;;;;Testing Traits
 (cd "..")
 (cd "krebecca")
-(load "~/war/load")
+(load "war/load")
 (define Canada (create-country 'Canada 
 			      "From sea to sea"
 			      50
@@ -38,6 +38,20 @@ countries-in-play
 			      90935100
 			      51958
 			      35))
+
+(set-self-image! Canada '(rational interventionist conceited weak follower))
+(image Canada)
+(set-diplomatic-opinions! Canada '((Russia aggressive 
+					   interventionist 
+					   conceited
+					   super-power
+					   visionary)
+				   (USA    rational
+					   interventionist
+					   realistic
+					   super-power
+					   visionary)))
+(diplomatic-opinions Canada)
 
 (inherent-traits Canada)
 (content (get-diplomacy 'canada-internal-character))

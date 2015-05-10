@@ -21,7 +21,7 @@
   (c-motto country-motto)
   (in-traits inherent-traits)
   (strategies strategy set-strategy!)
-  (self-image image set-image!)
+  (self-image image set-self-image!)
   (res resources set-resources!)
   (dip-opinions diplomatic-opinions set-diplomatic-opinions!)
   (meta-model perception set-perception!)
