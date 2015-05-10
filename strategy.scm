@@ -85,11 +85,20 @@
 	  (country2-believed-strength (fourth (retrieve-opinion country1 country2))))
       (cond ((< (trait-temp-value country1-believed-strength)
 	       (trait-temp-value country2-believed-strength))
-	    (list 1 '(stronger than we are)))
+	    (list 1 (declare-reason 'Strength 
+                                    (country-name country2)
+                                    'stronger
+                                    `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
 	    ((> (trait-temp-value country1-believed-strength)
 	     (trait-temp-value country-2-believed-strength))
-	     (list -1 '(weaker than we are)))
-	    (else (list 0 '(of the same strength as))))
+	     (list -1 (declare-reason 'Strength 
+                                      (country-name country2)
+                                      'weaker
+                                      `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
+	    (else (list 0 (declare-reason 'Strength 
+                                          (country-name country2)
+                                          'weaker
+                                          `(We are ,country1-believed-strength and they are ,country2-believed-strength)))))
     ))
   strength?)
 
@@ -103,11 +112,20 @@
 	  (country2-believed-intelligence (fifth (retrieve-opinion country1 country2))))
       (cond ((< (trait-temp-value country1-believed-intelligence)
 	       (trait-temp-value country2-believed-intelligence))
-	    (list 1 '(more intelligent than we are)))
+	    (list 1 (declare-reason 'Intelligence 
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
 	    ((> (trait-temp-value country1-believed-intelligence)
 	     (trait-temp-value country-2-believed-intelligence))
-	     (list - 1 '(less intelligent than we are)))
-	    (else (list 0 '(of about the same intelligence as))))
+	     (list - 1 (declare-reason 'Intelligence
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
+	    (else (list 0 (declare-reason 'Intelligence 
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence)))))
     ))
   intelligence?)
 
@@ -162,6 +180,7 @@
 	  
   equals?)
     
+
 
 (define choose-strategic-opinion
   (make-generic-operator 3 'confidence-based-decision-making 'default))
