@@ -1,0 +1,209 @@
+(define (make-generic-operation arity name)
+  (let ((metadata (make-operation-metadata name arity)))
+    (let ((operation (lambda args (generic-dispatch metadata args))))
+      (set-operation-metadata! operation metadata)
+      operation)))
+
+(define (add-to-generic-operation! operation applicability handler)
+  (add-operation-rule! (make-operation-rule applicability handler)
+                       (get-operation-metadata operation)))
+
+
+
+;; Inserting generic operation using the code in the package file
+;; Operation is a list ('operation operation)
+;; Arithmetic package is an instance of a package record
+
+(define (insert-generic-operation! operation arithmetic-package)
+  (adjoin-association! arithmetic-package operation))
+
+
+(define (generic-dispatch metadata args)
+  (let ((rule (find-applicable-rule metadata args)))
+    (if rule
+        (apply-operation-rule rule args)
+        (error "Inapplicable operator:"
+               (operation-metadata-name metadata)))))
+
+;;;; rules
+
+(define (find-applicable-rule metadata args)
+  (find (lambda (rule)
+          (is-operation-rule-applicable? rule args))
+        (operation-metadata-rules metadata)))
+
+(define (apply-operation-rule rule args)
+  (apply (operation-rule-handler rule) args))
+
+(define (is-operation-rule-applicable? rule args)
+  (is-applicable? (operation-rule-applicability rule)
+                  args))
+
+(define (make-operation-rule applicability handler)
+  (list applicability handler))
+
+(define (operation-rule-applicability rule)
+  (car rule))
+
+(define (operation-rule-handler rule)
+  (cadr rule))
+
+;;;; metadata
+
+(define (make-operation-metadata name arity)
+  (%make-operation-metadata name arity '()))
+
+(define-record-type <operation-metadata>
+    (%make-operation-metadata name arity rules)
+    operation-metadata?
+  (name operation-metadata-name)
+  (arity operation-metadata-arity)
+  (rules operation-metadata-rules set-operation-metadata-rules!))
+
+(define (add-operation-rule! rule metadata)
+  (set-operation-metadata-rules! metadata
+      (cons rule (operation-metadata-rules metadata))))
+
+;;;; metadata table
+
+(define (set-operation-metadata! operation metadata)
+  (hash-table-set! operation-metadata-table
+                   operation
+                   metadata))
+
+(define (get-operation-metadata operation)
+  (hash-table-ref operation-metadata-table operation))
+
+(define (generic-operation? object)
+  (hash-table-exists? operation-metadata-table object))
+
+(define operation-metadata-table
+  (make-key-weak-eqv-hash-table))
+
+;;;; Interface with arithmetic
+
+(define (generic-arithmetic base-arithmetic)
+  (make-arithmetic 'generic base-arithmetic any-object?
+    (lambda (name base-arithmetic)
+      (let ((base-operation
+             (arithmetic-operation base-arithmetic name)))
+        (make-generic-operation (operation-arity base-operation)
+                                name)))))
+
+
+
+(define (add-rule! package name applicability handler)
+   (let ((generic-operation (arithmetic-operation package name)))
+      (add-to-generic-operation!
+             (operation-procedure generic-operation)
+             applicability
+             handler)))
+
+
+
+(define (add-to-generic-arithmetic! generic-arithmetic arithmetic)
+  (for-each (lambda (name)
+              (let ((generic-operation
+                     (arithmetic-operation generic-arithmetic name))
+                    (operation
+                     (arithmetic-operation arithmetic name)))
+                (add-to-generic-operation!
+                 (operation-procedure generic-operation)
+                 (operation-applicability operation)
+                 (operation-procedure operation))))
+            (arithmetic-operators arithmetic)))
+
+(define (extend-generic-arithmetic! generic-arithmetic extension)
+  (add-to-generic-arithmetic! generic-arithmetic
+                              (extension generic-arithmetic)))
+
+
+;;;; Problem 3.2 Vectors by Generics
+
+(define (vector-element-wise element-wise-procedure)
+   (lambda vecs
+      (ensure-vector-lengths-match vecs)
+      (apply vector-map element-wise-procedure vecs)))
+
+(define (ensure-vector-lengths-match vecs)
+   (let ((first-vec-length (vector-length (car vecs))))
+       (if (any (lambda (v)
+                  (not (n:= (vector-length v)
+                      first-vec-length)))
+                  vecs)
+            (error "Vector Dimension mismatch" vecs) #t)))
+
+(define (sum-vector vec)
+   (define (sum-list lis)
+       (if (null? lis) 0 (+ (car lis) (sum-list (cdr lis)))))
+   (sum-list (vector->list vec)))
+
+(define (max-norm-vector input)
+  (lambda (vec)
+   (let ((lis (apply (vector-element-wise abs) (list vec))))
+      (apply max (vector->list lis)))))
+
+       
+(define (add-vector-operations-to-generics)
+   ;; Here we define the application rules and hanlers
+   (let ((g (generic-arithmetic numeric-arithmetic))
+         (app-rule-vector (predicates vector? vector?))
+         (app-rule-scalar-1 (predicates number? vector?))
+         (app-rule-scalar-2 (predicates vector? number?))
+         (app-rule-single (predicates vector?))
+         (handler-add (lambda (a b) (apply (vector-element-wise +) (list a b))))
+         (handler-sub (lambda (a) (apply (vector-element-wise -) (list a))))
+         (handler-mul-v (lambda (a b) (sum-vector (apply (vector-element-wise *) (list a b)))))
+         (handler-mul-s-1 (lambda (a b) (apply (vector-element-wise *)
+                                               (list (make-vector (vector-length b) a) b))))
+         (handler-mul-s-2 (lambda (a b) (apply (vector-element-wise *)
+                                               (list (make-vector (vector-length a) b) a))))
+         (handler-mag (lambda (a) (sqrt (sum-vector (apply (vector-element-wise *) (list a a)))))))
+  
+      (add-to-generic-arithmetic! g numeric-arithmetic)
+      (extend-generic-arithmetic! g function-arithmetic)
+      (add-to-generic-arithmetic! g (symbolic-arithmetic numeric-arithmetic))
+
+      ;; Here we add the rules for vectors
+      (add-rule! g '+ app-rule-vector handler-add)
+      (add-rule! g '- app-rule-single handler-sub)
+      (add-rule! g '* app-rule-vector handler-mul-v)
+      (add-rule! g '* app-rule-scalar-1 handler-mul-s-1)
+      (add-rule! g '* app-rule-scalar-2 handler-mul-s-2)
+      (add-rule! g 'magnitude app-rule-single handler-mag)
+      
+      ;; We define a new operation maxnorm
+      (define maxnorm (make-generic-operation 1 'maxnorm)) 
+      (add-to-generic-operation! maxnorm 
+                                 (predicates vector?) 
+                                 (lambda (vec)
+                                      (let ((lis (apply (vector-element-wise abs) (list vec))))
+                                           (apply max (vector->list lis)))))
+      (insert-generic-operation! (list 'maxnorm maxnorm) g)
+
+;;;;; Enabling vector on cos sin operation
+
+      (define vector-op (make-generic-operation 1 'vector-op))
+      (add-to-generic-operation! vector-op
+                                 (predicates list? number?)
+                                 (lambda (a b)
+                                    (list->vector (list ((first a) b) 
+                                                        ((second a) b)))))
+      (insert-generic-operation! (list 'vector-op vector-op) g)
+      (add-rule! g 'vector (predicates operation? operation?)
+                           (lambda (a b)
+                               (lambda (y)
+                                  (vector-op (list a b) y))))
+      (add-rule! g 'vector (predicates number? number?) 
+                           (lambda (a b)
+                                  (list->vector (list a b))))
+
+
+
+
+
+
+                                          
+      (install-arithmetic! g)))
+
+(add-vector-operations-to-generics)

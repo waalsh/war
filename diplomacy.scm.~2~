@@ -1,0 +1,27 @@
+;; This will define how we perceive others
+
+;; This is what country's action box might look like:
+;    (list
+;        (attack country-name receiver)
+;        (demand-tribute country-name receiver)
+;        (defend country-name receiver)
+;        
+
+;; Here is what our opinion of a country will look like:
+;; (list aggression-adj  
+;;       diplomacy-adj
+;;       confidence-adj... so on.)
+
+(define (compare-traits (make-generic-operator 3 'similarity 'default)))
+
+(defhandler compare-traits country1 country2 'diplomacy diplomacy?)
+
+(define (diplomacy? 
+  
+  
+
+(define (develop-strategy actor receiver)
+  (let ((our-image (our image of ourselves))
+	(our-view-of-target (or view of them))
+	(our-resources (our resources))
+	(their-resources (their resources))

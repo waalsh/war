@@ -13,6 +13,7 @@
     "traits"
     "ui"
     "extra"
+    "utils"
 ))
 
 (for-each load loaded-filenames)

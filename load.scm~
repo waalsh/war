@@ -6,13 +6,16 @@
 (cd "..")
 
 (define loaded-filenames
-  '("ghelper"
+  '(;"ghelper"
     ;"actions"
     "country"
     ;"strategy"
     "traits"
     "ui"
     "extra"
+    "utils"
+    "operators"
+    "generics"
 ))
 
 (for-each load loaded-filenames)
