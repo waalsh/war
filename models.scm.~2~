@@ -1,0 +1,55 @@
+ ;; Models of other nations
+
+
+ (define (retrieve-opinion of-country about-country)
+   (let lp ((opinion (dip-opinions of-country)))
+     (if (eq? (car (car opinion)) (name about-country))
+	 (cdr (car opinion))
+	 (lp (cdr opinion)))))
+
+
+ (define (retrieve-opinion of-country about-country)
+   (let lp ((opinion (dip-opinions of-country)))
+     (if (eq? (car (car opinion)) (name about-country))
+	 (cdr (car opinion))
+	 (if (and (pair? opinion) (< 1 (length opinion)))
+	     (lp (cdr opinion))
+	     (if (eq? (car (car (cdr opinion))) (name about-country))
+		 (cdr (car (car (cdr opinion))))
+		 '(You are without opinion))))))
+
+;set-diplomatic-opinions! decides which traits other countries should have
+;output: dictionary of a country
+;        each entry in list: (country . opinions)
+
+(define (set-diplomatic-opinions! country-with-opinions all-countries)
+  (let ((opinions '()))
+    (let country-loop ((countries all-countries))
+      (if (pair?)
+	  (pp '(Sad fuce))
+	  (let ((gift-counter 0)
+		(country (car countries))
+		(strength (estimate-strength country (resources country))))
+	    (set! opinions (append opinions strength))
+	    ;...second loop here
+	    (country-loop (cdr countries))))
+      opinions)))
+
+; for country's in the world
+	; set counter to 0 for gift counting
+	; decide strength based on resources
+	; for the actions of those countries
+		;increment counter if it's 'give gift'
+		;	
+;
+
+; add the conjecture to dictionary
+
+
+
+(define (estimate-strength country resources) ;;we need to improve this
+	'weak)
+
+(define (get-diplomatic-opinions country
+;return the entry from the dictionary
+)

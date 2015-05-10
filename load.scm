@@ -12,6 +12,7 @@
     ;"strategy"
     "traits"
     "ui"
+    ;"models"
     "extra"
     "utils"
 ))

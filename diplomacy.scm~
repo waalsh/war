@@ -5,6 +5,10 @@
   (let lp ((opinion (dip-opinions of-country)))
     (if (eq? (car (car opinion)) (name about-country))
 	(cdr (car opinion))
-	(lp (cdr opinion)))))
+	(if (and (pair? opinion) (< 1 (length opinion)))
+	    (lp (cdr opinion))
+            (if (eq? (car (car (cdr opinion))) (name about-country))
+                (cdr (car (car (cdr opinion))))
+                '(You are without opinion))))))
 
 

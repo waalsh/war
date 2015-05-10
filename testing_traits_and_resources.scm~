@@ -82,6 +82,45 @@ countries-in-play
 			      3.8
 			      300))
 
-(inherent-traits canada)
-(set-image! canada (content (get-diplomacy 'canada-internal-character)))
-(image canada)
+(inherent-traits usa)
+(set-image! usa (content (get-diplomacy 'usa-internal-character)))
+;Value: (interventionist critical strong average-joe)
+
+;;Testing Models of other countries
+(define usa (create-country 'usa 
+			      "From sea to sea"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      3.8
+			      3.8
+			      300))
+(define canada (create-country 'canada 
+			      "From sea to seas"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      3.8
+			      3.8
+			      300))
+
+(define (past-canada-actions)
+	(list (list 'attack canada usa) (list 'gift canada usa) (list 'gift canada usa)))
+
+(set-actions-taken! canada (past-canada-actions))
+
+(actions-taken canada)
+
+(eq? usa (caddr (car (actions-taken canada))))
+
+(set-diplomatic-opinions! usa (find-diplomatic-opinions usa (list usa canada usa usa)))
+
+(find-diplomatic-opinions usa (list usa canada))
+
+(diplomatic-opinions usa)
+
+
