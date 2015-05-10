@@ -3,16 +3,16 @@
 (define (estimate-strength country resources) ;;we need to improve this
   (list 'weak))
 
-(define (estimate-diplomacy country counter actions-num) ;;we need to improve this
+(define (estimate-diplomacy country actions) ;;we need to improve this
   (list 'isolationist))
 
-(define (estimate-aggression country action) ;;we need to improve this
+(define (estimate-aggression country actions) ;;we need to improve this
   (list 'meek))
 
-(define (estimate-confidence country action) ;;we need to improve this
+(define (estimate-confidence country actions) ;;we need to improve this
   (list 'critical))
 
-(define (estimate-intelligence country action) ;;we need to improve this
+(define (estimate-intelligence country actions) ;;we need to improve this
   (list 'follower))
 
 
@@ -22,23 +22,19 @@
 
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
-    (let country-loop ((countries all-countries))
+    (let country-loop ((countries all-countries)
+		       (c-character '()))
       (cond ((pair? countries)
-	     (let action-loop ((actions (actions-taken (car countries)))
-			       (counter 0)
-			       (c-character (list (car countries))))
-	      (cond ((pair? actions) ;more than one action
-		     ;;deal with the actions
-		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
-		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
-		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
-		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
-		     (set! c-character (append c-character (estimate-aggression (car countries) (car actions))))
-		     (set! c-character (append c-character (list 'happy)))
-		     (action-loop (cdr actions) (+ counter 1) c-character))))
-	    ;;deal with the country
-	    (set! opinions (append opinions (list 'b)))
-	    (country-loop (cdr countries)))
+	     (set! c-character (append c-character (list (car countries))))
+	     (set! c-character (append c-character (estimate-aggression (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-diplomacy (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-confidence (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-strength (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-intelligence (car countries) (actions-taken (car countries)))))
+	  
+	     (pp c-character)
+	     (set! opinions (append opinions (list c-character)))
+	     (country-loop (cdr countries) '()))
 	    (else opinions)))))
 
 (cd "..")
