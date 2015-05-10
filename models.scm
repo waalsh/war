@@ -1,44 +1,37 @@
 ;; Models of other nations
 
-
-; for country's in the world
-	; set counter to 0 for gift counting
-	; decide strength based on resources
-	; for the actions of those countries
-		;increment counter if it's 'give gift'
-
 (define (estimate-strength country resources) ;;we need to improve this
 	'weak)
+
+(define (estimate-diplomacy country counter actions-num) ;;we need to improve this
+	'isolationist)
+
+(define (estimate-aggression country action) ;;we need to improve this
+	'meek)
+
+(define (estimate-confidence country action) ;;we need to improve this
+	'critical)
+
+(define (estimate-intelligence country action) ;;we need to improve this
+	'follower)
+
 
 ;find-diplomatic-opinions! decides which traits other countries should have
 ;output: dictionary of a country
 ;        each entry in list: (country . opinions)
-;(define (find-diplomatic-opinions country-with-opinions all-countries)
-;  (let ((opinions '()))
-;   (let country-loop ((countries all-countries))
-;      (if (pair? countries)
-;	  (let ((gift-counter 0)
-;		(country (car countries))
-;		(strength (estimate-strength country (resources country))))
-;	    (set! opinions (append opinions strength))
-;	    (let action-loop ((actions (taken-actions country)))
-;	      (if (pair? countries)
-;		  (define counter (+ counter 1))
-;		  (set! opinions (append opinions counter))
-;		  (action-loop (cdr actions)))
-;	      (country-loop (cdr countries))))))
-;      opinions))
-
-
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
     (let country-loop ((countries all-countries))
       (cond ((pair? countries)
-	    (let action-loop ((actions (actions-taken (car countries))))
-	      (cond ((pair? actions)
-		    (pp (car actions))
-		    (action-loop (cdr actions)))
-		    ))
+	    (let action-loop ((actions (actions-taken (car countries)))
+			      (counter 0)
+			      (character '())
+		      (cond ((pair? actions)
+			     ;;deal with the actions
+			     (pp counter)
+			     (action-loop (cdr actions) (+ 1 counter)))
+			    ))
+		;;deal with the country
 	    (pp (country-name (car countries)))
 	    (country-loop (cdr countries)))
 	    (else opinions)))))
@@ -76,6 +69,5 @@
 (set-actions-taken! canada (past-canada-actions))
 (set-actions-taken! usa (past-usa-actions))
 
-(set-diplomatic-opinions! usa (find-diplomatic-opinions-alpha usa (list usa canada usa usa)))
 (set-diplomatic-opinions! usa (find-diplomatic-opinions usa (list usa canada usa usa)))
 (diplomatic-opinions usa)

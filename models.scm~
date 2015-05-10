@@ -10,35 +10,33 @@
 (define (estimate-strength country resources) ;;we need to improve this
 	'weak)
 
+(define (estimate-diplomacy country counter actions-num) ;;we need to improve this
+	'isolationist)
+
+(define (estimate-aggression country action) ;;we need to improve this
+	'meek)
+
+(define (estimate-confidence country action) ;;we need to improve this
+	'critical)
+
+(define (estimate-intelligence country action) ;;we need to improve this
+	'follower)
+
+
 ;find-diplomatic-opinions! decides which traits other countries should have
 ;output: dictionary of a country
 ;        each entry in list: (country . opinions)
-;(define (find-diplomatic-opinions country-with-opinions all-countries)
-;  (let ((opinions '()))
-;   (let country-loop ((countries all-countries))
-;      (if (pair? countries)
-;	  (let ((gift-counter 0)
-;		(country (car countries))
-;		(strength (estimate-strength country (resources country))))
-;	    (set! opinions (append opinions strength))
-;	    (let action-loop ((actions (taken-actions country)))
-;	      (if (pair? countries)
-;		  (define counter (+ counter 1))
-;		  (set! opinions (append opinions counter))
-;		  (action-loop (cdr actions)))
-;	      (country-loop (cdr countries))))))
-;      opinions))
-
-
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
     (let country-loop ((countries all-countries))
       (cond ((pair? countries)
 	    (let action-loop ((actions (actions-taken (car countries))))
 	      (cond ((pair? actions)
+			;;deal with the actions
 		    (pp (car actions))
 		    (action-loop (cdr actions)))
 		    ))
+		;;deal with the country
 	    (pp (country-name (car countries)))
 	    (country-loop (cdr countries)))
 	    (else opinions)))))
