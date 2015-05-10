@@ -39,6 +39,20 @@ countries-in-play
 			      51958
 			      35))
 
+(set-self-image! Canada '(rational interventionist conceited weak follower))
+(image Canada)
+(set-diplomatic-opinions! Canada '((Russia aggressive 
+					   interventionist 
+					   conceited
+					   super-power
+					   visionary)
+				   (USA    rational
+					   interventionist
+					   realistic
+					   super-power
+					   visionary)))
+(diplomatic-opinions Canada)
+
 (inherent-traits Canada)
 (content (get-diplomacy 'canada-internal-character))
 ;Value: #(tms (#(value=80,
