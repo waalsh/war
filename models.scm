@@ -3,8 +3,12 @@
 (define (estimate-strength country resources) ;;we need to improve this
   (list 'weak))
 
-(define (estimate-diplomacy country actions) ;;we need to improve this
-  (list 'isolationist))
+(define (estimate-diplomacy country actions)
+  (let action-loop ((actions actions))
+    (cond ((pair? actions)
+	   (pp (car (car actions)))
+	   (action-loop (cdr actions))))
+    (list 'isolationist)))
 
 (define (estimate-aggression country actions) ;;we need to improve this
   (list 'meek))
