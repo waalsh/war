@@ -27,7 +27,7 @@ countries-in-play
 ;;;;Testing Traits
 (cd "..")
 (cd "krebecca")
-(load "~/war/load")
+(load "war/load")
 (define Canada (create-country 'Canada 
 			      "From sea to sea"
 			      50
@@ -84,9 +84,43 @@ countries-in-play
 
 (inherent-traits usa)
 (set-image! usa (content (get-diplomacy 'usa-internal-character)))
-(image canada)
+;Value: (interventionist critical strong average-joe)
 
-(cond (((inquire (eq-get (eq-get (inherent-traits usa) 'aggression) 'meek)))
-	 'meek)
+;;Testing Models of other countries
+(define usa (create-country 'usa 
+			      "From sea to sea"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      3.8
+			      3.8
+			      300))
+(define canada (create-country 'canada 
+			      "From sea to seas"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      3.8
+			      3.8
+			      300))
 
-(eq? (inquire (eq-get (eq-get (inherent-traits usa) 'aggression) 'meek)) #f)
+(define (past-canada-actions)
+	(list (list 'attack canada usa) (list 'gift canada usa) (list 'gift canada usa)))
+
+(set-actions-taken! canada (past-canada-actions))
+
+(actions-taken canada)
+
+(eq? usa (caddr (car (actions-taken canada))))
+
+(set-diplomatic-opinions! usa (find-diplomatic-opinions usa (list usa canada usa usa)))
+
+(find-diplomatic-opinions usa (list usa canada))
+
+(diplomatic-opinions usa)
+
+
