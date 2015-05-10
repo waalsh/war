@@ -29,21 +29,22 @@
 ;	      (country-loop (cdr countries))))))
 ;      opinions))
 
+
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
     (let country-loop ((countries all-countries))
       (cond ((pair? countries)
-	     (set! opinions (append opinions (list (country-name (car countries)))))
-	     (country-loop (cdr countries)))
+	    (let action-loop ((actions (actions-taken (car countries))))
+	      (cond ((pair? actions)
+		    (pp (car actions))
+		    (action-loop (cdr actions)))
+		    ))
+	    (pp (country-name (car countries)))
+	    (country-loop (cdr countries)))
 	    (else opinions)))))
 
 (cd "..")
 (load "war/load")
-
-;	     (let action-loop ((actions country-actions))
-;	       (cond ((pair? actions)
-		      
-
 
 (define usa (create-country 'usa 
 			      "From sea to sea"
@@ -66,5 +67,15 @@
 			      3.8
 			      300))
 
+(define (past-canada-actions)
+	(list (list 'attack canada usa) (list 'gift canada usa) (list 'gift canada usa)))
+
+(define (past-usa-actions)
+	(list (list 'attack usa canada) (list 'gift usa canada) (list 'gift usa canada)))
+
+(set-actions-taken! canada (past-canada-actions))
+(set-actions-taken! usa (past-usa-actions))
+
+(set-diplomatic-opinions! usa (find-diplomatic-opinions-alpha usa (list usa canada usa usa)))
 (set-diplomatic-opinions! usa (find-diplomatic-opinions usa (list usa canada usa usa)))
 (diplomatic-opinions usa)
