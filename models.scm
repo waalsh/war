@@ -32,13 +32,18 @@
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (let ((opinions '()))
     (let country-loop ((countries all-countries))
-      (set! opinions (append opinions (list 'a)))
-      (if (pair? countries)
-	  (country-loop (cdr countries))))
-      opinions))
+      (cond ((pair? countries)
+	     (set! opinions (append opinions (list (country-name (car countries)))))
+	     (country-loop (cdr countries)))
+	    (else opinions)))))
 
 (cd "..")
 (load "war/load")
+
+;	     (let action-loop ((actions country-actions))
+;	       (cond ((pair? actions)
+		      
+
 
 (define usa (create-country 'usa 
 			      "From sea to sea"
