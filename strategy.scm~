@@ -85,11 +85,20 @@
 	  (country2-believed-strength (fourth (retrieve-opinion country1 country2))))
       (cond ((< (trait-temp-value country1-believed-strength)
 	       (trait-temp-value country2-believed-strength))
-	    (list 1 '(stronger than we are)))
+	    (list 1 (declare-reason 'Strength 
+                                    (country-name country2)
+                                    'stronger
+                                    `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
 	    ((> (trait-temp-value country1-believed-strength)
 	     (trait-temp-value country-2-believed-strength))
-	     (list -1 '(weaker than we are)))
-	    (else (list 0 '(of the same strength as))))
+	     (list -1 (declare-reason 'Strength 
+                                      (country-name country2)
+                                      'weaker
+                                      `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
+	    (else (list 0 (declare-reason 'Strength 
+                                          (country-name country2)
+                                          'weaker
+                                          `(We are ,country1-believed-strength and they are ,country2-believed-strength)))))
     ))
   strength?)
 
@@ -103,11 +112,20 @@
 	  (country2-believed-intelligence (fifth (retrieve-opinion country1 country2))))
       (cond ((< (trait-temp-value country1-believed-intelligence)
 	       (trait-temp-value country2-believed-intelligence))
-	    (list 1 '(more intelligent than we are)))
+	    (list 1 (declare-reason 'Intelligence 
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
 	    ((> (trait-temp-value country1-believed-intelligence)
 	     (trait-temp-value country-2-believed-intelligence))
-	     (list - 1 '(less intelligent than we are)))
-	    (else (list 0 '(of about the same intelligence as))))
+	     (list - 1 (declare-reason 'Intelligence
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
+	    (else (list 0 (declare-reason 'Intelligence 
+                                    (country-name country2)
+                                    'smarter
+                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence)))))
     ))
   intelligence?)
 
@@ -155,18 +173,50 @@
 	    (lp (cdr considerations)
 		(+ value-of-judgment evaluation)
 		(append line-of-symbolic-reasoning thought)))
-	    (begin (pp value-of-judgment) (pp line-of-symbolic-reasoning) (pp based-on)))
+	  (let ((final-say-so (choose-strategic-opinion country1 (length based-on) value-of-judgment)))
+	    (begin (pp final-say-so) (pp value-of-judgment) (pp line-of-symbolic-reasoning) (pp based-on))))
 
 ))
 	  
   equals?)
     
 
-(define choose-strategic-threshold (make-generic-operator 2 'confidence-based-decision-making 'default))
 
-(define ( 
+(define choose-strategic-opinion
+  (make-generic-operator 3 'confidence-based-decision-making 'default))
 
-	
+(define (critical-country? country) 
+     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical)))
+(define (realistic-country? country) 
+     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'realistic))) 
+(define (conceited-country? country) 
+     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))) 
+
+(defhandler choose-strategic-opinion
+  (lambda (country considerations value-of-judgment)
+    (let ((threshold (* considerations -0.5))
+	  (value value-of-judgment))
+      (produce-opinion threshold value)))
+  critical-country?)
+
+(defhandler choose-strategic-opinion
+  (lambda (country considerations value-of-judgment)
+    (let ((threshold (* considerations 0))
+	  (value value-of-judgment))
+      (produce-opinion threshold value)))
+  realistic-country?)
+
+(defhandler choose-strategic-opinion
+  (lambda (country considerations value-of-judgment)
+    (let ((threshold (* considerations 0.5))
+	  (value value-of-judgment))
+      (produce-opinion threshold value)))
+  conceited-country?)
+
+(define (produce-opinion threshold value)
+  (cond ((= threshold value) 'equal)
+	((> value threshold) 'superior)
+	((< value threshold) 'inferior)))
 
 ;(define (develop-strategy actor receiver)
 ;  (let ((our-image (our image of ourselves))
