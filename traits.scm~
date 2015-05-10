@@ -26,7 +26,6 @@
     (add-branch! country-character strength 'strength)
     (add-branch! country-character intelligence 'intelligence)
 
-
     (add-interval-property aggression (make-interval 0 20) 'meek)
     (add-interval-property aggression (make-interval 21 40) 'passive)
     (add-interval-property aggression (make-interval 41 60) 'rational)
@@ -46,8 +45,7 @@
 
     (add-interval-property intelligence (make-interval 0 40) 'follower)
     (add-interval-property intelligence (make-interval 41 80) 'average-joe)
-    (add-interval-property intelligence (make-interval 81 100) 'visionary)
-    ))
+    (add-interval-property intelligence (make-interval 81 100) 'visionary)))
 
 (define (get-aggression country-character)
   (eq-get country-character 'aggression))
@@ -71,7 +69,6 @@
 				     confidence_inherent
 				     strength_inherent
 				     intelligence_inherent)
-  (pp 'Declaring)
   (make-personality country-character)
 
   (tell! (get-aggression country-character) aggression_inherent)
@@ -79,4 +76,47 @@
   (tell! (get-confidence country-character) confidence_inherent)
   (tell! (get-strength country-character) strength_inherent)
   (tell! (get-intelligence country-character) intelligence_inherent))
+
+;;Create self-image from traits
+(define (set-image! country in-traits)
+  (list
+   (self-image-diplomacy? country)
+   (self-image-confidence? country)
+   (self-image-strength? country)
+   (self-image-intelligence? country)))
+
+
+(define (self-image-aggression? country)
+  'rational)
+
+(define (self-image-diplomacy? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'isolationist))
+	 'isolationist)
+	((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'interventionist))
+	 'interventionist)))
+  
+
+(define (self-image-confidence? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical))
+	 'critical)
+	((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'realistic))
+	 'realistic)
+	((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))
+	 'conceited)))
+
+(define (self-image-strength? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak))
+	 'weak)
+	((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong))
+	 'strong)
+	((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power))
+	 'super-power)))
+
+(define (self-image-intelligence? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower))
+	 'follower)
+	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe))
+	 'average-joe)
+	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary))
+	 'visionary)))
 

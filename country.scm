@@ -160,4 +160,3 @@
   (list (assign-money (random 18000000000))
 	(assign-land (random 6600000))
 	(assign-population (random 10000000))))
-

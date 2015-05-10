@@ -27,7 +27,7 @@ countries-in-play
 ;;;;Testing Traits
 (cd "..")
 (cd "krebecca")
-(load "~/war/load")
+(load "war/load")
 (define Canada (create-country 'Canada 
 			      "From sea to sea"
 			      50

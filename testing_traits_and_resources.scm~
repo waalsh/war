@@ -1,0 +1,87 @@
+;;;;Testing Resources
+
+;Create simple country, give it some simple and random resources. Re-set its population.
+
+(define USA (create-quick-country 'USA "We're the best")) ;empty resources
+(value (car (resources USA)))
+;Error, because resources USA returns empty list because its empty
+
+(define some-res (random-resources))
+(set-resources! usa some-res) 
+
+(amount (car (resources USA)))
+;Value: 17330876242
+
+(set-money! usa 0) ;bankruptcy :( Mass panic :( so sad :(
+
+(amount (car (resources USA)))
+;Value: 0
+
+(resources USA)
+
+(+ (car (resources USA)) 3)
+
+countries-in-play
+
+
+;;;;Testing Traits
+(cd "..")
+(cd "krebecca")
+(load "war/load")
+(define Canada (create-country 'Canada 
+			      "From sea to sea"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      90935100
+			      51958
+			      35))
+
+(inherent-traits Canada)
+(content (get-diplomacy 'canada-internal-character))
+;Value: #(tms (#(value=80,
+   premises=(),
+   informants=(user))))
+
+(define ba (eq-get (inherent-traits Canada) 'aggression))
+
+(inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'meek))
+(inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'passive))
+(inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'rational))
+(inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'aggressive))
+(inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'violent))
+
+(inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'isolationist))
+(inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'interventionist))
+
+(inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical))
+(inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'realistic))
+(inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))
+
+(inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak))
+(inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong))
+(inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power))
+
+(inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower))
+(inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe))
+(inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary))
+
+;Value: #t
+
+;;Testing Self-image of Inherent traits
+(define usa (create-country 'usa 
+			      "From sea to sea"
+			      50
+			      80
+			      30
+			      50
+			      60
+			      3.8
+			      3.8
+			      300))
+
+(inherent-traits canada)
+(set-image! canada (content (get-diplomacy 'canada-internal-character)))
+(image canada)
