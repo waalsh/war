@@ -87,7 +87,7 @@
 
 
 (define (self-image-aggression? country)
-  'rational)
+  'rational) ;all countries think they're rational
 
 (define (self-image-diplomacy? country)
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'isolationist))
