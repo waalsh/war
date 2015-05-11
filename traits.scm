@@ -190,3 +190,11 @@
 	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary))
 	 'visionary)))
 
+(define (self-character country)
+     (list
+		    (self-aggression? country)
+		    (self-diplomacy? country)
+		    (self-confidence? country)
+		    (self-strength? country)
+		    (self-intelligence? country)))
+

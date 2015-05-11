@@ -51,7 +51,7 @@
 
 (define (retrieve-personal-opinion of-country-about-country)
   (let lp ((opinion (diplomatic-opinions (car of-country-about-country))))
-    (if (eq? (car (car opinion)) (country-name (cadr of-country-about-country)))
+    (if (eq? (country-name (car (car opinion))) (country-name (cadr of-country-about-country)))
 	(cdr (car opinion))
 	(if (and (pair? opinion) (< 1 (length opinion)))
 	    (lp (cdr opinion))

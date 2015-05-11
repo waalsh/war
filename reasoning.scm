@@ -34,7 +34,7 @@
 (define (initiate-QA country)
   (set! current-conversationalist country)
   (set! current-musings '())
-  `(Hello - I am Canada. How may I help you?))
+  `(Greeting - This is ,(country-name current-conversationalist) speaking - may I help you?))
 
 ;(define (end-QA country))
 
@@ -137,7 +137,7 @@
          ((= number 1) '(My god when is your mother coming.))
          ((= number 2) '(Professor Sussman, can you get this one?))
          ((= number 3) '(Ask God.))
-         ((= number 4) '(Is there a reason why you cannot figure it out?))
+         ((= number 4) '(That would be five bucks))
          ((= number 5) '(I did everything that I could for you.))
          ((= number 6) '(Curiosity killed the cat.))
          ((= number 7) '(Read The Art of War by Sun Tzu. He knows what he is talking about.))))

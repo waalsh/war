@@ -28,13 +28,13 @@
 
 ;; I want to be able to ask questions about strategies
 
-(define current-conversationalist Canada)
+(define current-conversationalist 'none)
 (define current-musings '())
 
 (define (initiate-QA country)
   (set! current-conversationalist country)
   (set! current-musings '())
-  `(Hello - I am Canada. How may I help you?))
+  `(Greeting - This is ,(country-name current-conversationalist) speaking - may I help you?))
 
 ;(define (end-QA country))
 
