@@ -49,16 +49,33 @@
 					   super-power
 					   visionary)))
 (diplomatic-opinions Canada)
-(retrieve-opinion Canada Russia)
-(retrieve-opinion Canada USA)
+(retrieve-opinion (list Canada USA))
 
 
 (trait-temp-value 'meek)
-
-(compare-traits 'strength Canada Russia)
+;;;;;;;;;;;;;;;;;;;;;;;;; country1 country2 perspective
+(compare-traits 'strength Canada Russia Canada)
 (compare-traits 'intelligence Canada Russia)
 (compare-traits 'policies Canada Russia)
 (compare-traits 'rationality Canada Russia)
-
+(cd "..")
 (load "war/strategy")
-(analyze-strategic-opinion 'test-equals Canada Russia '(strength intelligence))
+(load "war/reasoning")
+
+;; testing reasoning
+
+(define a (cadr (compare-traits 'strength USA Russia Canada)))
+(define b (cadr (compare-traits 'intelligence Canada Russia Canada)))
+
+(get-reasoning-train-of-thought a)
+(get-subject-of-thought a)
+(get-object-of-thought a)
+(get-reasoning-question a)
+(get-reasoning-conclusion a)
+
+
+(analyze-strategic-opinion 'status Canada Russia Canada '(strength intelligence))
+(hash-table-ref (strategy Canada) 'Russia)
+
+(analyze-strategic-opinion 'status USA Russia Canada '(strength intelligence))
+(hash-table-keys (deduction Canada))
