@@ -40,6 +40,8 @@
 			    100))
 
 
-(set-image! Canada (inherent-traits Canada))
+(set-image! canada)
+
+(self-confidence? canada)
 
 
