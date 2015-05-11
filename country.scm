@@ -117,10 +117,6 @@
         (hash-table-set! (deduction in-mind-of) `(,(country-name of-country) ,(country-name about-country)) new-strategy))) 
 
 
-
-
-
-
 ;; RESOURCE DECLARATION, GETTING, and SETTING METHODS
 
 ;Declaration

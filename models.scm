@@ -46,8 +46,18 @@
 	  (else gifts))))
 
 ;returns true if country1 is weaker than country2
-(define (weaker? country1 country2) ;waiting for Godot...
-  #t)
+(define (weaker? country1 country2)
+	(let ((strength-counter 0))
+		(if (> (resource-amount (get-money! country1)) (resource-amount (get-money! country2)))
+			(set! strength-counter (+ strength-counter 1))
+			(set! strength-counter (- strength-counter 1)))
+		(if (> (resource-amount (get-land! country1)) (resource-amount (get-land! country2)))
+			(set! strength-counter (+ strength-counter 1))
+			(set! strength-counter (- strength-counter 1)))
+		(if (> (resource-amount (get-population! country1)) (resource-amount (get-population! country2)))
+			(set! strength-counter (+ strength-counter 1))
+			(set! strength-counter (- strength-counter 1)))
+		(< strength-counter 0)))
 
 ;returns true if country has attacked a country stronger than it
 (define (find-bad-war country actions)
@@ -78,11 +88,11 @@
 
 ;Estimating Aggression
 (define (estimate-aggression country country-watching actions)
-  (let ((war-count (war-count country actions))
+  (let ((wars-count (war-count country actions))
 	(war-of-aggression (find-war country country-watching actions)))
     (cond (war-of-aggression
 	   (list 'violent))
-	  ((> war-count 0)
+	  ((> wars-count 0)
 	   (list 'aggressive))
 	  ((> (gift-counter actions) (/ (length actions) 2))
 	   (list 'weak))
@@ -90,28 +100,40 @@
 
 ;Estimating Confidence
 (define (estimate-confidence country country-watching actions)
-  (let ((gifts-to-weaker (gifts-to-weaker country actions))
+  (let ((gifts-to-weaker? (gifts-to-weaker country actions))
 	(war-of-aggression (find-bad-war country actions)))
     (cond (war-of-aggression
 	   (list 'conceited))
-	  ((and gifts-to-weaker (eq? 'aggressive (self-aggression? country-watching))) ;bullies don't understand humanitarian aid
+	  ((and gifts-to-weaker? (eq? 'aggressive (self-aggression? country-watching))) ;bullies don't understand humanitarian aid
 	   (list 'critical))
 	  (else (list 'realistic)))))
 
 ;Estimating Intelligence
 (define (estimate-intelligence country country-watching actions)
-  (let ((gifts-to-weaker (gifts-to-weaker country actions))
+  (let ((gifts-to-weaker? (gifts-to-weaker country actions))
 	(act-of-deception (deception? country actions)))
     (cond ((and act-of-deception (eq? 'visionary (self-intelligence? country-watching))) ;game recognizes game
 	   (list 'visionary))
-	  ((and gifts-to-weaker (eq? 'aggressive (self-aggression? country-watching))) ;bullies think humanitarian aid is stupid
+	  ((and gifts-to-weaker? (eq? 'aggressive (self-aggression? country-watching))) ;bullies think humanitarian aid is stupid
 	   (list 'follower))
 	  (else (list 'average-Joe)))))
 
 ;Estimating Strength
-(define (estimate-strength country resources)
-	;;;waiting for godot
-  (list 'weak))
+(define (estimate-strength country country-watching resources)
+	(cond ((weaker? country-watching country)
+	       (cond ((eq? 'super-power (self-image-strength? country-watching))
+		      (list 'super-power))
+		     ((eq? 'strong (self-image-strength? country-watching))
+			    (list 'super-power))
+		     ((eq? 'weak (self-image-strength? country-watching))
+		      (list 'strong))))
+	      ((weaker? country country-watching)
+	       (cond ((eq? 'super-power (self-image-strength? country-watching))
+		      (list 'strong))
+		     ((eq? 'strong (self-image-strength? country-watching))
+			    (list 'weak))
+		     ((eq? 'weak (self-image-strength? country-watching))
+		      (list 'weak))))))
 
 ;Estimating Diplomacy
 (define (estimate-diplomacy country actions)
@@ -133,7 +155,7 @@
 	     (set! c-character (append c-character (estimate-aggression (car countries) country-with-opinions (actions-taken (car countries)))))
 	     (set! c-character (append c-character (estimate-diplomacy (car countries) (actions-taken (car countries)))))
 	     (set! c-character (append c-character (estimate-confidence (car countries) country-with-opinions (actions-taken (car countries)))))
-	     (set! c-character (append c-character (estimate-strength (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-strength (car countries) country-with-opinions (actions-taken (car countries)))))
 	     (set! c-character (append c-character (estimate-intelligence (car countries) country-with-opinions (actions-taken (car countries)))))
 	  
 	     (set! opinions (append opinions (list c-character)))
@@ -141,10 +163,6 @@
 	    (else opinions))))))
 
 #|
-;;Testing Section
-(cd "..")
-(load "war/load")
-
 (define usa (create-country 'usa 
 			      "From sea to sea"
 			      50
