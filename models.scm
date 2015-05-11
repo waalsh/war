@@ -40,10 +40,9 @@
     (cond ((pair? actions)
 	   (cond ((eq? 'gift (car (car actions)))
 		  (if (weaker? (caddr (car actions)) country)
-		      #t
-		      (else (action-loop (cdr actions) #f)))
-		  (else (action-loop (cdr actions) #f)))))
-	  (else gifts))))
+		      #t))
+		 (else (action-loop (cdr actions) #f))))
+	  (else gifts?))))
 
 ;returns true if country1 is weaker than country2
 (define (weaker? country1 country2)
@@ -60,11 +59,11 @@
 		(< strength-counter 0)))
 
 ;returns true if country has attacked a country stronger than it
-(define (find-bad-war country actions)
+(define (find-bad-war country country-watching actions)
   (let action-loop ((actions actions)
 		    (bad-war #f))
     (cond ((pair? actions)
-	   (if (and (not (weaker? country-watching (caddr (car actions)) country)) (eq? 'attack (car (car actions))))
+	   (if (and (not (weaker? (caddr (car actions)) country)) (eq? 'attack (car (car actions))))
 	       #t
 	       (action-loop (cdr actions) #f)))
 	  (else bad-war))))
@@ -78,9 +77,9 @@
 	   (cond ((and (= counter 2) (eq? 'attack (car (car actions))))
 		  #t)
 		 ((eq? 'gift (car (car actions)))
-		  (action-loop (cdr actions) (+ counter 1)))
-		 (else (action-loop (cdr actions) counter))) 
-	   (else counter)))))
+		  (action-loop (cdr actions) (+ counter 1) #f))
+		 (else (action-loop (cdr actions) counter))))
+	   (else counter))))
 
 ;;ESTIMATION METHODS: takes a country, its actions, and the perceiving country and assigns a trait 
 ;;to the first country based on the perception of its actions by the second country. We're building 
@@ -101,7 +100,7 @@
 ;Estimating Confidence
 (define (estimate-confidence country country-watching actions)
   (let ((gifts-to-weaker? (gifts-to-weaker country actions))
-	(war-of-aggression (find-bad-war country actions)))
+	(war-of-aggression (find-bad-war country country-watching actions)))
     (cond (war-of-aggression
 	   (list 'conceited))
 	  ((and gifts-to-weaker? (eq? 'aggressive (self-aggression? country-watching))) ;bullies don't understand humanitarian aid
@@ -161,55 +160,3 @@
 	     (set! opinions (append opinions (list c-character)))
 	     (country-loop (cdr countries) '()))
 	    (else opinions))))))
-
-#|
-(define usa (create-country 'usa 
-			      "From sea to sea"
-			      50
-			      80
-			      30
-			      50
-			      60
-			      3.8
-			      3.8
-			      300))
-(define canada (create-country 'canada 
-			      "From sea to seas"
-			      50
-			      80
-			      30
-			      50
-			      60
-			      3.8
-			      3.8
-			      300))
-
-;Catching Diplomacy
-(define (past-canada-actions)
-	(list (list 'gift canada usa) (list 'gift canada usa) (list 'attack canada usa)))
-
-(gift-counter past-usa-actions)
-(define (past-usa-actions)
-	(list 
-	 (list 'gift usa canada) 
-	 (list 'gift usa canada)))
-
-(set-actions-taken! canada (past-canada-actions))
-(set-actions-taken! usa (past-usa-actions))
-
-(set-diplomatic-opinions! usa (find-diplomatic-opinions usa (list canada usa)))
-(diplomatic-opinions usa)
-
-(inherent-traits usa)
-(set-image! usa (content (get-diplomacy 'usa-internal-character)))
-(image usa)
-
-;Seeing the truth about yourself
-(self-intelligence? usa)
-(self-aggression? usa)
-(self-diplomacy? usa)
-(self-confidence? usa)
-(self-strength? usa)
-
-;Testing others' confidence
-|#
