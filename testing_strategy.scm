@@ -38,6 +38,7 @@
 
 (set-self-image! Canada '(rational interventionist conceited weak follower))
 (image Canada)
+(strategy Canada)
 (set-diplomatic-opinions! Canada '((Russia aggressive 
 					   interventionist 
 					   conceited
@@ -67,7 +68,7 @@
 (define a (cadr (compare-traits 'strength USA Russia Canada)))
 (define b (cadr (compare-traits 'intelligence Canada Russia Canada)))
 
-(get-reasoning-train-of-thought a)
+(list? (get-reasoning-train-of-thought a))
 (get-subject-of-thought a)
 (get-object-of-thought a)
 (get-reasoning-question a)
@@ -78,4 +79,21 @@
 (hash-table-ref (strategy Canada) 'Russia)
 
 (analyze-strategic-opinion 'status USA Russia Canada '(strength intelligence))
+
+(analyze-strategic-opinion 'status Russia USA Canada '(strength intelligence))
 (hash-table-keys (deduction Canada))
+
+(initiate-QA Canada)
+
+(ask '(What is your status with respect to Russia))
+
+(get-reasoning-train-of-thought current-musings)
+
+(ask '(Why do you think so?))
+
+(ask '(What is the status of USA in the opinion Russia))
+
+(ask '(ehh... why do you think so?))
+
+
+

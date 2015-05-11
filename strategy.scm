@@ -96,6 +96,7 @@
 	     (list 1 (declare-reason 'Strength 
 				     (country-name country2)
                                      (country-name country1)
+                                     (country-name perspective)
 				     'stronger
 				     `(,(country-name country1) is ,country1-believed-strength and 
                                         ,(country-name country2) is ,country2-believed-strength)
@@ -105,6 +106,7 @@
 	     (list -1 (declare-reason 'Strength 
                                       (country-name country2)
                                       (country-name country1)
+                                      (country-name perspective)
                                       'weaker
                                       `(,(country-name country1) is ,country1-believed-strength and 
                                         ,(country-name country2) is ,country2-believed-strength)
@@ -112,6 +114,7 @@
 	    (else (list 0 (declare-reason 'Strength 
                                           (country-name country2)
                                           (country-name country1)
+		                          (country-name perspective)
                                           'same
                                           `(,(country-name country1) is ,country1-believed-strength and 
                                         ,(country-name country2) is ,country2-believed-strength)
@@ -132,6 +135,7 @@
 	    (list 1 (declare-reason 'Intelligence 
                                     (country-name country2)
                                     (country-name country1)
+                                    (country-name perspective)
                                     'greater
                                     `(,(country-name country1) is ,country1-believed-intelligence 
                                        and ,(country-name country2) is ,country2-believed-intelligence)
@@ -141,6 +145,7 @@
 	     (list - 1 (declare-reason 'Intelligence
                                     (country-name country2)
                                     (country-name country1)
+                                    (country-name perspective)
                                     'lesser
                                     `(,(country-name country1) is ,country1-believed-intelligence 
                                        and ,(country-name country2) is ,country2-believed-intelligence)
@@ -148,6 +153,7 @@
 	    (else (list 0 (declare-reason 'Intelligence 
                                     (country-name country2)
                                     (country-name country1)
+                                    (country-name perspective)
                                     'same
                                     `(,(country-name country1) is ,country1-believed-intelligence 
                                        and ,(country-name country2) is ,country2-believed-intelligence)
@@ -205,6 +211,7 @@
 	  (let ((final-say-so (choose-strategic-opinion perspective country1 (length based-on) value-of-judgment)))
 	    (let ((new-strategy (declare-reason test 
                                                 (country-name country2)
+                                                (country-name country1)
                                                 (country-name country1)
                                                 final-say-so
                                                 line-of-symbolic-reasoning 1)))
