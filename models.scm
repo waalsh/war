@@ -1,13 +1,9 @@
-;; Models of other nations
+;; Developing models of other nations
 
-(define (estimate-strength country resources) ;;we need to improve this
-  (list 'weak))
+;;BOOLEAN AND SUPPORT METHODS: used by estimation methods below 
+;;to determine traits of a country from another country's perspective
 
-(define (estimate-diplomacy country actions)
-  (if (> (gift-counter actions) (/ (length actions) 2))
-      (list 'isolationist)
-      (list 'interventionist)))
-
+;counts gifts made by country
 (define (gift-counter actions)
   (let action-loop ((actions actions)
 		    (counter 0))
@@ -17,17 +13,7 @@
 	       (action-loop (cdr actions) counter)))
 	 (else counter))))
 	
-(define (estimate-aggression country country-watching actions)
-  (let ((war-count (war-count country actions))
-	(war-of-aggression (find-war country country-watching actions)))
-    (cond (war-of-aggression
-	   (list 'violent))
-	  ((> war-count 0)
-	   (list 'aggressive))
-	  ((> (gift-counter actions) (/ (length actions) 2))
-	   (list 'weak))
-	  (else (list 'rational)))))
-
+;counts 'wars' (attack) actions of country
 (define (war-count country actions)
   (let action-loop ((actions actions)
 		    (counter 0))
@@ -37,24 +23,17 @@
 	       (action-loop (cdr actions) counter)))
 	 (else counter))))
 
+;returns true if country1 has attacked country-watching
 (define (find-war country country-watching actions)
   (let action-loop ((actions actions)
 		    (aggression #f))
     (cond ((pair? actions)
-	   (if (eq? country-watching (caddr (car actions)))
+	   (if (and (eq? 'attack (car (car actions))) (eq? country-watching (caddr (car actions))))
 	       #t
 	       (action-loop (cdr actions) #f)))
 	  (else aggression))))
 
-(define (estimate-confidence country country-watching actions)
-  (let ((gifts-to-weaker (gifts-to-weaker country actions))
-	(war-of-aggression (find-bad-war country actions)))
-    (cond (war-of-aggression
-	   (list 'conceited))
-	  ((and gifts-to-weaker (eq? 'aggressive (self-aggression? country-watching))) ;bullies don't understand humanitarian aid
-	   (list 'critical))
-	  (else (list 'realistic)))))
-
+;returns true if country has given a gift to a weaker country
 (define (gifts-to-weaker country actions)
   (let action-loop ((actions actions)
 		    (gifts? #f))
@@ -66,15 +45,83 @@
 		  (else (action-loop (cdr actions) #f)))))
 	  (else gifts))))
 
-(define (weaker? country1 country2) ;change after Keke
+;returns true if country1 is weaker than country2
+(define (weaker? country1 country2) ;waiting for Godot...
   #t)
 
-(define (estimate-intelligence country actions) ;;we need to improve this
-  (list 'follower))
+;returns true if country has attacked a country stronger than it
+(define (find-bad-war country actions)
+  (let action-loop ((actions actions)
+		    (bad-war #f))
+    (cond ((pair? actions)
+	   (if (and (not (weaker? country-watching (caddr (car actions)) country)) (eq? 'attack (car (car actions))))
+	       #t
+	       (action-loop (cdr actions) #f)))
+	  (else bad-war))))
+
+;returns true if country perpetuated an act of deception: recognize by giving at least two gifts, followed by an attack
+(define (deception? country actions)
+  (let action-loop ((actions actions)
+		    (counter 0)
+		    (deception #f))
+    (cond ((pair? actions)
+	   (cond ((and (= counter 2) (eq? 'attack (car (car actions))))
+		  #t)
+		 ((eq? 'gift (car (car actions)))
+		  (action-loop (cdr actions) (+ counter 1)))
+		 (else (action-loop (cdr actions) counter))) 
+	   (else counter)))))
+
+;;ESTIMATION METHODS: takes a country, its actions, and the perceiving country and assigns a trait 
+;;to the first country based on the perception of its actions by the second country. We're building 
+;;a mini-model for the perceiving country
+
+;Estimating Aggression
+(define (estimate-aggression country country-watching actions)
+  (let ((war-count (war-count country actions))
+	(war-of-aggression (find-war country country-watching actions)))
+    (cond (war-of-aggression
+	   (list 'violent))
+	  ((> war-count 0)
+	   (list 'aggressive))
+	  ((> (gift-counter actions) (/ (length actions) 2))
+	   (list 'weak))
+	  (else (list 'rational)))))
+
+;Estimating Confidence
+(define (estimate-confidence country country-watching actions)
+  (let ((gifts-to-weaker (gifts-to-weaker country actions))
+	(war-of-aggression (find-bad-war country actions)))
+    (cond (war-of-aggression
+	   (list 'conceited))
+	  ((and gifts-to-weaker (eq? 'aggressive (self-aggression? country-watching))) ;bullies don't understand humanitarian aid
+	   (list 'critical))
+	  (else (list 'realistic)))))
+
+;Estimating Intelligence
+(define (estimate-intelligence country country-watching actions)
+  (let ((gifts-to-weaker (gifts-to-weaker country actions))
+	(act-of-deception (deception? country actions)))
+    (cond ((and act-of-deception (eq? 'visionary (self-intelligence? country-watching))) ;game recognizes game
+	   (list 'visionary))
+	  ((and gifts-to-weaker (eq? 'aggressive (self-aggression? country-watching))) ;bullies think humanitarian aid is stupid
+	   (list 'follower))
+	  (else (list 'average-Joe)))))
+
+;Estimating Strength
+(define (estimate-strength country resources)
+	;;;waiting for godot
+  (list 'weak))
+
+;Estimating Diplomacy
+(define (estimate-diplomacy country actions)
+  (if (> (gift-counter actions) (/ (length actions) 2))
+      (list 'isolationist)
+      (list 'interventionist)))
 
 ;find-diplomatic-opinions! decides which traits other countries should have
-;output: dictionary of a country
-;        each entry in list: (country . opinions)
+;output: list of lists
+;        each entry in list: (country object . opinions of traits)
 
 (define (find-diplomatic-opinions country-with-opinions all-countries)
   (set-diplomatic-opinions! country-with-opinions
@@ -87,12 +134,14 @@
 	     (set! c-character (append c-character (estimate-diplomacy (car countries) (actions-taken (car countries)))))
 	     (set! c-character (append c-character (estimate-confidence (car countries) country-with-opinions (actions-taken (car countries)))))
 	     (set! c-character (append c-character (estimate-strength (car countries) (actions-taken (car countries)))))
-	     (set! c-character (append c-character (estimate-intelligence (car countries) (actions-taken (car countries)))))
+	     (set! c-character (append c-character (estimate-intelligence (car countries) country-with-opinions (actions-taken (car countries)))))
 	  
 	     (set! opinions (append opinions (list c-character)))
 	     (country-loop (cdr countries) '()))
 	    (else opinions))))))
 
+#|
+;;Testing Section
 (cd "..")
 (load "war/load")
 
@@ -121,8 +170,6 @@
 (define (past-canada-actions)
 	(list (list 'gift canada usa) (list 'gift canada usa) (list 'attack canada usa)))
 
-
-
 (gift-counter past-usa-actions)
 (define (past-usa-actions)
 	(list 
@@ -140,6 +187,11 @@
 (image usa)
 
 ;Seeing the truth about yourself
+(self-intelligence? usa)
 (self-aggression? usa)
+(self-diplomacy? usa)
+(self-confidence? usa)
+(self-strength? usa)
 
-
+;Testing others' confidence
+|#

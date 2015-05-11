@@ -9,10 +9,10 @@
   '("ghelper"
     ;"actions"
     "country"
-    ;"strategy"
+    "strategy"
     "traits"
     "ui"
-    ;"models"
+    "models"
     "extra"
     "utils"
 ))
