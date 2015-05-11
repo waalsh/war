@@ -79,23 +79,23 @@
 
 ;;Create self-image from traits
 (define (set-image! country in-traits)
-  (list
+  (set-self-image! (list
    (self-image-diplomacy? country)
    (self-image-confidence? country)
    (self-image-strength? country)
-   (self-image-intelligence? country)))
-
+   (self-image-intelligence? country))))
 
 (define (self-image-aggression? country)
   'rational) ;all countries think they're rational
 
-(define (self-image-diplomacy? country)
+;self-image of diplomacy policies doesn't change
+(define (self-image-diplomacy? country) 
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'isolationist))
 	 'isolationist)
 	((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'interventionist))
 	 'interventionist)))
-  
 
+;confidence doesn't change
 (define (self-image-confidence? country)
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical))
 	 'critical)
@@ -104,7 +104,78 @@
 	((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))
 	 'conceited)))
 
+;confidence adjusts perception of self-strength
 (define (self-image-strength? country)
+  (cond (((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak)) (eq? (self-confidence? country) 'conceited))
+	 'strong)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak)) (eq? (self-confidence? country) 'realistic))
+	'weak)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak)) (eq? (self-confidence? country) 'critical))
+	 'weak)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong)) (eq? (self-confidence? country) 'conceited))
+	 'super-power)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong)) (eq? (self-confidence? country) 'realistic))
+	'strong)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong)) (eq? (self-confidence? country) 'critical))
+	 'weak)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power)) (eq? (self-confidence? country) 'conceited))
+	 'super-power)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power)) (eq? (self-confidence? country) 'realistic))
+	'super-power)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power)) (eq? (self-confidence? country) 'critical))
+	 'strong))))
+
+;confidence adjusts perception of self-intelligence
+(define (self-image-intelligence? country)
+  (cond (((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'conceited))
+	 'average-joe)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'realistic))
+	'follower)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'critical))
+	 'follower)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe)) (eq? (self-confidence? country) 'conceited))
+	 'visionary)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe)) (eq? (self-confidence? country) 'realistic))
+	'average-joe)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe)) (eq? (self-confidence? country) 'critical))
+	 'follower)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary)) (eq? (self-confidence? country) 'conceited))
+	 'visionary)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary)) (eq? (self-confidence? country) 'realistic))
+	'visionary)
+	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary)) (eq? (self-confidence? country) 'critical))
+	 'average-joe))))
+
+  
+;;Getters for adjectives attached to inherent traits (complicated by propogators)
+(define (self-aggression? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'meek))
+	 'meek)
+	((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'passive))
+	 'passive)
+	((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'rational))
+	 'rational)
+	((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'aggressive))
+	 'aggressive)
+	((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'violent))
+	 'violent)))
+
+(define (self-diplomacy? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'isolationist))
+	 'isolationist)
+	((inquire (eq-get (eq-get (inherent-traits country) 'diplomacy) 'interventionist))
+	 'interventionist)))
+  
+
+(define (self-confidence? country)
+  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical))
+	 'critical)
+	((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'realistic))
+	 'realistic)
+	((inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))
+	 'conceited)))
+
+(define (self-strength? country)
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'weak))
 	 'weak)
 	((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'strong))
@@ -112,7 +183,7 @@
 	((inquire (eq-get (eq-get (inherent-traits country) 'strength) 'super-power))
 	 'super-power)))
 
-(define (self-image-intelligence? country)
+(define (self-intelligence? country)
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower))
 	 'follower)
 	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe))

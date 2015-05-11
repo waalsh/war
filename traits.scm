@@ -127,7 +127,7 @@
 
 ;confidence adjusts perception of self-intelligence
 (define (self-image-intelligence? country)
-  (cond (((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'conceited))
+  (cond ((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'conceited))
 	 'average-joe)
 	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower)) (eq? (self-confidence? country) 'realistic))
 	'follower)
@@ -146,13 +146,7 @@
 	((and (inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary)) (eq? (self-confidence? country) 'critical))
 	 'average-joe))))
 
-  (cond ((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'follower))
-	 'follower)
-	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'average-joe))
-	 'average-joe)
-	((inquire (eq-get (eq-get (inherent-traits country) 'intelligence) 'visionary))
-	 'visionary)))
-
+  
 ;;Getters for adjectives attached to inherent traits (complicated by propogators)
 (define (self-aggression? country)
   (cond ((inquire (eq-get (eq-get (inherent-traits country) 'aggression) 'meek))

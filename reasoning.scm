@@ -28,7 +28,7 @@
 
 ;; I want to be able to ask questions about strategies
 
-(define current-conversationalist Canada)
+(define current-conversationalist 'none)
 (define current-musings '())
 
 (define (initiate-QA country)
