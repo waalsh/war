@@ -41,21 +41,29 @@
 ;;       confidence-adj... so on.)
 
 
-(define compare-traits (make-generic-operator 3 'similarity 'default))
+(define compare-traits (make-generic-operator 4 'similarity 'default))
 
 (define (strength? comparison) (eq? comparison 'strength))
 (define (intelligence? comparison) (eq? comparison 'intelligence))
 (define (policies? comparison) (eq? comparison 'policies))
 (define (rationality? comparison) (eq? comparison 'rationality))
 
-(define (retrieve-opinion of-country about-country)
-  (let lp ((opinion (diplomatic-opinions of-country)))
-    (if (eq? (car (car opinion)) (country-name about-country))
+
+(define (retrieve-personal-opinion of-country-about-country)
+  (let lp ((opinion (diplomatic-opinions (car of-country-about-country))))
+    (if (eq? (car (car opinion)) (country-name (cadr of-country-about-country)))
 	(cdr (car opinion))
 	(if (and (pair? opinion) (< 1 (length opinion)))
 	    (lp (cdr opinion))
             '(What a mysterious place!)))))
 
+(define retrieve-opinion (make-generic-operator 1 'get-thoughts-about-entity retrieve-personal-opinion))
+(define (my-opinion-about-me? whos-asking) (eq? (car whos-asking) (cadr whos-asking)))
+
+(defhandler retrieve-opinion
+  (lambda (of-country-about-country)
+    (image (car of-country-about-country)))
+ my-opinion-about-me?)
 
 (define (trait-temp-value trait)
   (cond ((eq? trait 'meek) 1)
@@ -76,61 +84,80 @@
 	((eq? trait 'visionary) 3)))
   
 (defhandler compare-traits
-  (lambda (point-of-comparison country1 country2)
+  (lambda (point-of-comparison country1 country2 perspective)
     ;;get country1 strength from image
     ;;get country2 strength  from dip-opinions
     ;;compare
     ;;output greater than, less than, or same
-    (let ((country1-believed-strength (fourth (image country1)))
-	  (country2-believed-strength (fourth (retrieve-opinion country1 country2))))
+    (let ((country1-believed-strength (fourth (retrieve-opinion (list perspective country1))))
+	  (country2-believed-strength (fourth (retrieve-opinion (list perspective country2)))))
       (cond ((< (trait-temp-value country1-believed-strength)
-	       (trait-temp-value country2-believed-strength))
-	    (list 1 (declare-reason 'Strength 
-                                    (country-name country2)
-                                    'stronger
-                                    `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
+		(trait-temp-value country2-believed-strength))
+	     (list 1 (declare-reason 'Strength 
+				     (country-name country2)
+                                     (country-name country1)
+				     'stronger
+				     `(,(country-name country1) is ,country1-believed-strength and 
+                                        ,(country-name country2) is ,country2-believed-strength)
+                                       1)))
 	    ((> (trait-temp-value country1-believed-strength)
-	     (trait-temp-value country-2-believed-strength))
+	     (trait-temp-value country2-believed-strength))
 	     (list -1 (declare-reason 'Strength 
                                       (country-name country2)
+                                      (country-name country1)
                                       'weaker
-                                      `(We are ,country1-believed-strength and they are ,country2-believed-strength))))
+                                      `(,(country-name country1) is ,country1-believed-strength and 
+                                        ,(country-name country2) is ,country2-believed-strength)
+                                       -1)))
 	    (else (list 0 (declare-reason 'Strength 
                                           (country-name country2)
-                                          'weaker
-                                          `(We are ,country1-believed-strength and they are ,country2-believed-strength)))))
+                                          (country-name country1)
+                                          'same
+                                          `(,(country-name country1) is ,country1-believed-strength and 
+                                        ,(country-name country2) is ,country2-believed-strength)
+                                       0))))
     ))
   strength?)
 
 (defhandler compare-traits
-  (lambda (point-of-comparison country1 country2)
+  (lambda (point-of-comparison country1 country2 perspective)
     ;;get country1 strength from image
     ;;get country2 strength from dip-opinions
     ;;compare
     ;;output greater than, less than, or same
-    (let ((country1-believed-intelligence (fifth (image country1)))
-	  (country2-believed-intelligence (fifth (retrieve-opinion country1 country2))))
+    (let ((country1-believed-intelligence (fifth (retrieve-opinion (list perspective country1))))
+	  (country2-believed-intelligence (fifth (retrieve-opinion (list perspective country2)))))
       (cond ((< (trait-temp-value country1-believed-intelligence)
 	       (trait-temp-value country2-believed-intelligence))
 	    (list 1 (declare-reason 'Intelligence 
                                     (country-name country2)
-                                    'smarter
-                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
+                                    (country-name country1)
+                                    'greater
+                                    `(,(country-name country1) is ,country1-believed-intelligence 
+                                       and ,(country-name country2) is ,country2-believed-intelligence)
+                                     1)))
 	    ((> (trait-temp-value country1-believed-intelligence)
-	     (trait-temp-value country-2-believed-intelligence))
+	     (trait-temp-value country2-believed-intelligence))
 	     (list - 1 (declare-reason 'Intelligence
                                     (country-name country2)
-                                    'smarter
-                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence))))
+                                    (country-name country1)
+                                    'lesser
+                                    `(,(country-name country1) is ,country1-believed-intelligence 
+                                       and ,(country-name country2) is ,country2-believed-intelligence)
+                                     -1)))
 	    (else (list 0 (declare-reason 'Intelligence 
                                     (country-name country2)
-                                    'smarter
-                                    `(We are ,country1-believed-intelligence and they are ,country2-believed-intelligence)))))
+                                    (country-name country1)
+                                    'same
+                                    `(,(country-name country1) is ,country1-believed-intelligence 
+                                       and ,(country-name country2) is ,country2-believed-intelligence)
+                                     0))))
     ))
   intelligence?)
 
+;; Has to be fixed
 (defhandler compare-traits
-  (lambda (point-of-comparison country1 country2)
+  (lambda (point-of-comparison country1 country2 perspective)
     ;;get country1 policies from image
     ;;get country2 policies from dip-opinions
     ;;comare
@@ -143,8 +170,10 @@
 	       (else '(We dislike))))))
   policies?)
 
+
+;; Has to be fixed
 (defhandler compare-traits
-  (lambda (point-of-comparison country1 country2)
+  (lambda (point-of-comparison country1 country2 perspective)
     ;;get country1 aggression from image
     ;;get country2 aggression from dip-opinions
     ;;output greater than less than or same
@@ -156,58 +185,69 @@
   rationality?)
 
 
-(define analyze-strategic-opinion (make-generic-operator 4 'analyze-possible-goals 'default))
+(define analyze-strategic-opinion (make-generic-operator 5 'analyze-possible-goals 'default))
 
-(define (equals? option) (eq? option 'test-equals))
+(define (status? option) (eq? option 'status))
 
 
 (defhandler analyze-strategic-opinion
-  (lambda (test country1 country2 based-on)
+  (lambda (test country1 country2 perspective based-on)
     ;; based-on is a list of comparisons we will issue to make a decision
     (let lp ((considerations based-on)
 	     (value-of-judgment 0)
 	     (line-of-symbolic-reasoning '()))
       (if (pair? considerations)
-	  (let ((evaluation (car (compare-traits (car considerations) country1 country2)))
-		(thought (compare-traits (car considerations) country1 country2)))
+	  (let ((evaluation (car (compare-traits (car considerations) country1 country2 perspective)))
+		(thought (cadr (compare-traits (car considerations) country1 country2 perspective))))
 	    (lp (cdr considerations)
 		(+ value-of-judgment evaluation)
-		(append line-of-symbolic-reasoning thought)))
-	  (let ((final-say-so (choose-strategic-opinion country1 (length based-on) value-of-judgment)))
-	    (begin (pp final-say-so) (pp value-of-judgment) (pp line-of-symbolic-reasoning) (pp based-on))))
+		(append line-of-symbolic-reasoning (list thought))))
+	  (let ((final-say-so (choose-strategic-opinion perspective country1 (length based-on) value-of-judgment)))
+	    (let ((new-strategy (declare-reason test 
+                                                (country-name country2)
+                                                (country-name country1)
+                                                final-say-so
+                                                line-of-symbolic-reasoning 1)))
+               (set-strategy! country1 country2 perspective new-strategy)
+               (pp '(I made up my mind)))))))
+  status?)
 
-))
-	  
-  equals?)
-    
 
 
-(define choose-strategic-opinion
-  (make-generic-operator 3 'confidence-based-decision-making 'default))
 
-(define (critical-country? country) 
-     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'critical)))
+(define (choose-strategic-opinion perspective country based-on value)
+    (if (eq? perspective country)
+         (choose-confidence-threshold (third (image country)) country based-on value)
+         (choose-confidence-threshold (third (retrieve-opinion (list perspective country))) country based-on value)))
+
+(define choose-confidence-threshold
+  (make-generic-operator 4 'confidence-based-internal-decision-making 'default))
+
+(define (critical-country? country)
+     (eq? country 'critical))
+
 (define (realistic-country? country) 
-     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'realistic))) 
-(define (conceited-country? country) 
-     (inquire (eq-get (eq-get (inherent-traits country) 'confidence) 'conceited))) 
+     (eq? country 'realistic))
 
-(defhandler choose-strategic-opinion
-  (lambda (country considerations value-of-judgment)
+(define (conceited-country? country) 
+     (eq? country 'conceited))
+
+(defhandler choose-confidence-threshold
+  (lambda (trait country considerations value-of-judgment)
     (let ((threshold (* considerations -0.5))
 	  (value value-of-judgment))
       (produce-opinion threshold value)))
   critical-country?)
 
-(defhandler choose-strategic-opinion
-  (lambda (country considerations value-of-judgment)
+(defhandler choose-confidence-threshold
+  (lambda (trait country considerations value-of-judgment)
     (let ((threshold (* considerations 0))
 	  (value value-of-judgment))
       (produce-opinion threshold value)))
   realistic-country?)
 
-(defhandler choose-strategic-opinion
-  (lambda (country considerations value-of-judgment)
+(defhandler choose-confidence-threshold
+  (lambda (trait country considerations value-of-judgment)
     (let ((threshold (* considerations 0.5))
 	  (value value-of-judgment))
       (produce-opinion threshold value)))

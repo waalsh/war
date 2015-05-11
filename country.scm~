@@ -10,17 +10,19 @@
 		     c-motto
 		     in-traits    ; list of adjectives
 		     strategies   ; designations of desired relationship with other countries
+                     deductions   ; perceived desired relationships between other countries
 		     self-image   ; how the country perceives itself
 		     res          ; list of resources
 		     dip-opinions ; in-traits of others
-		     meta-model   ; opinions of others about our in-traits country
+		     meta-model   ; opinions of others about our in-traits
 		     actions-t    ; actions taken
 		     actions-r)   ; actions received
    country?
   (c-name country-name)
   (c-motto country-motto)
   (in-traits inherent-traits)
-  (strategies strategy set-strategy!)
+  (strategies strategy %set-strategy!)
+  (deductions deduction %set-deduction!)
   (self-image image set-self-image!)
   (res resources set-resources!)
   (dip-opinions diplomatic-opinions set-diplomatic-opinions!)
@@ -63,7 +65,8 @@
 			)
   (set! countries-in-play (append countries-in-play (list name)))
   (let ((in-traits (symbol-append name '-internal-character))
-	(strategies '())
+	(strategies (make-hash-table))
+        (deductions (make-hash-table))
         (self-image '())
 	(res (list (assign-money wealth) (assign-land land) (assign-population population)))
 	(dip-opinions '())
@@ -75,6 +78,7 @@
 		     motto 
 		     in-traits 
 		     strategies
+                     deductions
                      self-image
 		     res 
 		     dip-opinions
@@ -99,6 +103,22 @@
 		     dip-opinions
 		     actions-t
 		     actions-r)))
+
+
+
+(define (strategy-towards strategy)
+   (car strategy))
+
+(define (set-strategy! of-country about-country in-mind-of new-strategy)
+    (if (eq? in-mind-of of-country)
+    	;;we are inside our mind making a judgment about someone
+        (hash-table-set! (strategy in-mind-of) (country-name about-country) new-strategy)
+        ;; we are inside our mind making judgement about someone else's judgment of someone else
+        (hash-table-set! (deduction in-mind-of) `(,(country-name of-country) ,(country-name about-country)) new-strategy))) 
+
+
+
+
 
 
 ;; RESOURCE DECLARATION, GETTING, and SETTING METHODS
